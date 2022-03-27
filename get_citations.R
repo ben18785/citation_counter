@@ -1,4 +1,5 @@
-install.packages("scholar")
+if(!requireNamespace('remotes')) install.packages("remotes")
+remotes::install_github('jkeirstead/scholar')
 
 library(scholar)
 id <- "PuPa3ekAAAAJ"
