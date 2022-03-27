@@ -25,7 +25,6 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages("remotes")
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_github("r-lib/bench")
+          remotes::install_github("jkeirstead/scholar")
         shell: Rscript {0}
       - run: Rscript get_citations.R
