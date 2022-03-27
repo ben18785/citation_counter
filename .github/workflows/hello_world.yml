@@ -4,7 +4,7 @@ name: Do things every 2 minutes
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/5 * * * *"
     
      # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
