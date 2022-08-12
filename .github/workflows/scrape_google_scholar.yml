@@ -32,4 +32,13 @@ jobs:
           install.packages("stringr")
           install.packages("dplyr")
         shell: Rscript {0}
-      - run: Rscript get_citations.R
+      - name: Get citations
+        run: Rscript get_citations.R
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "ben18785"
+          git config --global user.email "ben.c.lambert@gmail.com"
+
+          git add -A
+          git commit -m "Added new citations"
+          git push
