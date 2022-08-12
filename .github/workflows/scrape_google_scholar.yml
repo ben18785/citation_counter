@@ -16,7 +16,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
-        R: ['3.5.3'] 
+        R: ['3.5.3']
     name: R ${{ matrix.R }} sample
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,10 @@ jobs:
           r-version: ${{ matrix.R }}
       - name: Install dependencies
         run: |
-          install.packages("remotes")
-          remotes::install_github("jkeirstead/scholar", build=FALSE)
+          install.packages("xml2")
+          install.packages("rvest")
+          install.packages("httr")
+          install.packages("stringr")
+          install.packages("dplyr")
         shell: Rscript {0}
       - run: Rscript get_citations.R
