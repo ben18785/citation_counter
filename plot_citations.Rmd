@@ -50,10 +50,79 @@ df %>%
   ggplot(aes(x=date, y=cites, group=title)) +
   geom_line()
 ```
+Stacking citations
+```{r}
+df %>% 
+  mutate(title=fct_reorder(title, cites)) %>% 
+  ggplot(aes(x=date, y=cites, colour=title, group=title)) +
+  geom_area(position = "stack", stat="identity",
+            aes(fill=title)) +
+  geom_line(position = "stack", colour="black") +
+  theme(legend.position = "none")
+```
+
+
 Predict: build lms for each publication incorporating saturation, modelled by log(time)
 
 TODO
 ```{r}
 
+```
+
+Overall citations
+```{r}
+df %>% 
+  group_by(date) %>% 
+  summarise(cites=sum(cites)) %>% 
+  ggplot(aes(x=date, y=cites)) +
+  geom_line()
+```
+Cites per paper
+```{r}
+df %>% 
+  group_by(date) %>% 
+  summarise(mean=mean(cites),
+            middle=median(cites),
+            lower=quantile(cites, 0.25),
+            upper=quantile(cites, 0.75)) %>% 
+  pivot_longer(-date) %>% 
+  ggplot(aes(x=date, y=value, colour=name)) +
+  geom_line()
+```
+Number of papers
+```{r}
+df %>% 
+  group_by(date) %>%
+  summarise(n=n_distinct(title)) %>% 
+  ggplot(aes(x=date, y=n)) +
+  geom_line()
+```
+H index
+```{r}
+calculate_H <- function(cites, H_trial_vals = 1:100) {
+  counts <- vector(length = length(H_trial_vals))
+  for(i in seq_along(counts)) {
+    counts[i] <- sum(cites >= H_trial_vals[i])
+  }
+  df <- tibble(H_trial_vals, counts) %>% 
+    mutate(counts_below_H=if_else(counts < H_trial_vals,
+                                   1, 0))
+  df$H_trial_vals[which.max(df$counts_below_H)[1]] - 1
+}
+
+df %>% 
+  group_by(date) %>%
+  summarise(H=calculate_H(cites)) %>% 
+  ggplot(aes(x=date, y=H)) +
+  geom_line()
+```
+
+i10 index
+```{r}
+df %>% 
+  group_by(date) %>%
+  summarise(i10=sum(cites >= 10)) %>% 
+  ggplot(aes(x=date, y=i10)) +
+  geom_line()
 ```
 
