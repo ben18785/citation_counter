@@ -1,0 +1,59 @@
+---
+title: "Citation plots"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+get_file <- function(year, month, day) {
+  base <- "history/citations_"
+  date_val <- paste(year, month, day, sep="-")
+  filename <- paste0(base, date_val, ".csv")
+  df <- read.csv(filename) %>% 
+    mutate(date=date_val)
+  df
+}
+
+process_date <- function(filename) {
+  year <- substr(filename, 11, 14)
+  month <- substr(filename, 16, 17)
+  day <- substr(filename, 19, 20)
+  list(year=year, month=month, day=day)
+}
+
+get_all_files <- function() {
+  filenames <- list.files("history/")
+  for(i in seq_along(filenames)) {
+    temp_date <- process_date(filenames[i])
+    df <- get_file(temp_date$year,
+                   temp_date$month,
+                   temp_date$day)
+    if(i == 1)
+      big_df <- df
+    else
+      big_df <- big_df %>% bind_rows(df)
+  }
+  big_df %>% 
+    mutate(date=as.Date(
+      date, format="%Y-%m-%d"))
+}
+
+df <- get_all_files()
+```
+
+Plot individual publication trajectories
+```{r}
+df %>% 
+  ggplot(aes(x=date, y=cites, group=title)) +
+  geom_line()
+```
+Predict: build lms for each publication incorporating saturation, modelled by log(time)
+
+TODO
+```{r}
+
+```
+
