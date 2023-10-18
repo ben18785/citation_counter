@@ -49,6 +49,20 @@ Plot individual publication trajectories
 df %>% 
   ggplot(aes(x=date, y=cites, group=title)) +
   geom_line()
+
+# plot only top-n
+df_total <- df %>% 
+  group_by(title) %>% 
+  summarise(cites=last(cites)) %>% 
+  ungroup() %>% 
+  arrange(desc(cites))
+top_n <- df_total$title[1:15]
+
+df %>%
+  mutate(title_short=substr(title, 1, 15)) %>% 
+  filter(title %in% top_n) %>% 
+  ggplot(aes(x=date, y=cites, colour=title_short)) +
+  geom_line()
 ```
 Stacking citations
 ```{r}
@@ -71,11 +85,36 @@ TODO
 
 Overall citations
 ```{r}
-df %>% 
+df_cites <- df %>% 
   group_by(date) %>% 
   summarise(cites=sum(cites)) %>% 
+  mutate(time=date-first(date)) %>% 
+  mutate(time=as.numeric(time))
+
+df_cites %>% 
   ggplot(aes(x=date, y=cites)) +
-  geom_line()
+  geom_line() +
+  geom_smooth(method="lm")
+
+model <- lm(cites~time, data=df_cites)
+
+summary(model) # almost exactly one citation per day on 18\10\2023
+
+# how many citations will I have?
+predict_citations <- function(date, model, df_cites) {
+  time_difference <- as.numeric(as.Date(date) - first(df_cites$date))
+  predict(model, newdata=tibble(time=time_difference))
+}
+
+# end of year?
+predict_citations("2023-12-31", model, df_cites)
+
+# end of decade?
+predict_citations("2030-12-31", model, df_cites)
+
+# end of career? when I'm 70: 
+predict_citations("2055-07-18", model, df_cites)
+
 ```
 Cites per paper
 ```{r}
