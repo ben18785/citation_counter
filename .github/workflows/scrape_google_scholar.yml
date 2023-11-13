@@ -16,7 +16,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
-        R: ['3.5.3']
+        R: ['4.3.2']
     name: R ${{ matrix.R }} sample
     steps:
       - uses: actions/checkout@v2
