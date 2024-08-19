@@ -94,7 +94,8 @@ df_cites <- df %>%
 df_cites %>% 
   ggplot(aes(x=date, y=cites)) +
   geom_line() +
-  geom_smooth(method="lm")
+  geom_smooth(method="lm", colour="orange") +
+  geom_smooth(se=F, colour="orange", linetype=2)
 
 model <- lm(cites~time, data=df_cites)
 
