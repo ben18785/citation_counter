@@ -97,7 +97,7 @@ df_cites %>%
   geom_smooth(method="lm", colour="orange") +
   geom_smooth(se=F, colour="orange", linetype=2)
 
-model <- lm(cites~time, data=df_cites)
+model <- lm(cites~time+I(time^2), data=df_cites)
 
 summary(model) # almost exactly one citation per day on 18\10\2023
 
@@ -108,7 +108,7 @@ predict_citations <- function(date, model, df_cites) {
 }
 
 # end of year?
-predict_citations("2024-12-31", model, df_cites)
+predict_citations("2025-12-31", model, df_cites)
 
 # end of decade?
 predict_citations("2030-12-31", model, df_cites)
