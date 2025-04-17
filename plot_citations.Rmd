@@ -108,7 +108,7 @@ predict_citations <- function(date, model, df_cites) {
 }
 
 # end of year?
-predict_citations("2023-12-31", model, df_cites)
+predict_citations("2024-12-31", model, df_cites)
 
 # end of decade?
 predict_citations("2030-12-31", model, df_cites)
@@ -117,6 +117,45 @@ predict_citations("2030-12-31", model, df_cites)
 predict_citations("2055-07-18", model, df_cites)
 
 ```
+
+Citations per year: actual and predicted - not quite working
+```{r}
+df_actual <- df %>% 
+  mutate(year=year(date)) %>% 
+  group_by(year, date) %>% 
+  summarise(
+    cites=sum(cites)
+  ) %>% 
+  arrange(date) %>% 
+  group_by(year) %>% 
+  summarise(
+    cites=last(cites)-first(cites)
+  ) %>% 
+  mutate(type="actual")
+
+years_future <- seq(2024, 2030, 1)
+overall_cites <- vector(length = length(years_future))
+for(i in seq_along(years_future)) {
+  end_date <- paste0(years_future[i], "-12-31")
+  overall_cites[i] <- predict_citations(end_date, model, df_cites)
+}
+
+
+df_estimated <- tibble(
+  year=years_future,
+  cites=c(overall_cites[1] - sum(df_actual$cites[1:2]), diff(overall_cites))
+) %>% 
+  mutate(type="estimated")
+
+df_actual %>% 
+  bind_rows(df_estimated) %>% 
+  ggplot(aes(x=year, y=cites)) +
+  geom_col(aes(fill=type), position = "identity", alpha=0.8) +
+  scale_fill_brewer(palette = "Dark2")
+
+```
+
+
 Cites per paper
 ```{r}
 df %>% 
