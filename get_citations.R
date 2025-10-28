@@ -37,7 +37,7 @@ get_publications <- function(id, sortby="citation") {
     
     cstart = 0
     cstop = Inf
-    pagesize = 400
+    pagesize = 300
     url <- sprintf(url_template, id, cstart, pagesize)
     
     ## Load the page
